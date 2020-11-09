@@ -7,16 +7,16 @@ import React, {
   type ComponentType,
   type Node,
   type Ref,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { Transition, TransitionGroup } from 'react-transition-group';
+} from 'react'
+import { createPortal } from 'react-dom'
+import { Transition, TransitionGroup } from 'react-transition-group'
 
-import { ToastController } from './ToastController';
-import { ToastContainer, type ToastContainerProps } from './ToastContainer';
-import { type ToastProps, DefaultToast } from './ToastElement';
-const defaultComponents = { Toast: DefaultToast, ToastContainer };
+import { ToastController } from './ToastController'
+import { ToastContainer, type ToastContainerProps } from './ToastContainer'
+import { type ToastProps, DefaultToast } from './ToastElement'
+const defaultComponents = { Toast: DefaultToast, ToastContainer }
 
-import { generateUEID, NOOP } from './utils';
+import { generateUEID, NOOP } from './utils'
 import type {
   AddFn,
   UpdateFn,
@@ -26,17 +26,17 @@ import type {
   Options,
   Placement,
   Id,
-} from './types';
+} from './types'
 
 // $FlowFixMe `createContext`
-const ToastContext = React.createContext();
-const { Consumer, Provider } = ToastContext;
+const ToastContext = React.createContext()
+const { Consumer, Provider } = ToastContext
 
 const canUseDOM = !!(
   typeof window !== 'undefined' &&
   window.document &&
   window.document.createElement
-);
+)
 
 // Provider
 // ==============================
@@ -44,7 +44,7 @@ const canUseDOM = !!(
 type Components = {
   Toast: ComponentType<ToastProps>,
   ToastContainer: ComponentType<ToastContainerProps>,
-};
+}
 type Props = {
   // A convenience prop; the time until a toast will be dismissed automatically, in milliseconds.
   // Note that specifying this will override any defaults set on individual children Toasts.
@@ -60,15 +60,15 @@ type Props = {
   // A convenience prop; the duration of the toast transition, in milliseconds.
   // Note that specifying this will override any defaults set on individual children Toasts.
   transitionDuration: number,
-};
-type State = { toasts: ToastsType };
+}
+type State = { toasts: ToastsType }
 type Context = {
   add: AddFn,
   remove: RemoveFn,
   removeAll: () => void,
   update: UpdateFn,
   toasts: Array<Object>,
-};
+}
 
 export class ToastProvider extends Component<Props, State> {
   static defaultProps = {
@@ -77,88 +77,93 @@ export class ToastProvider extends Component<Props, State> {
     components: defaultComponents,
     placement: 'top-right',
     transitionDuration: 220,
-  };
+  }
 
-  state = { toasts: [] };
+  state = { toasts: [] }
+
+  constructor (props) {
+    super(props)
+    this.nodeRef = React.createRef()
+  }
 
   // Internal Helpers
   // ------------------------------
 
-  has = (id) => {
+  has = id => {
     if (!this.state.toasts.length) {
-      return false;
+      return false
     }
 
-    return Boolean(this.state.toasts.filter(t => t.id === id).length);
-  };
+    return Boolean(this.state.toasts.filter(t => t.id === id).length)
+  }
   onDismiss = (id: Id, cb: Callback = NOOP) => () => {
-    cb(id);
-    this.remove(id);
-  };
+    cb(id)
+    this.remove(id)
+  }
 
   // Public API
   // ------------------------------
 
   add = (content: Node, options?: Options = {}, cb: Callback = NOOP) => {
-    const id = options.id || generateUEID();
-    const callback = () => cb(id);
+    const id = options.id || generateUEID()
+    const callback = () => cb(id)
 
     // bail if a toast exists with this ID
     if (this.has(id)) {
-      return;
+      return
     }
 
     // update the toast stack
     this.setState(state => {
-      const newToast = { content, id, ...options };
-      const toasts = [...state.toasts, newToast];
+      const newToast = { content, id, ...options }
+      const toasts = [...state.toasts, newToast]
 
-      return { toasts };
-    }, callback);
+      return { toasts }
+    }, callback)
 
     // consumer may want to do something with the generated ID (and not use the callback)
-    return id;
-  };
+    return id
+  }
   remove = (id: Id, cb: Callback = NOOP) => {
-    const callback = () => cb(id);
+    const callback = () => cb(id)
 
     // bail if NO toasts exists with this ID
     if (!this.has(id)) {
-      return;
+      return
     }
 
     this.setState(state => {
-      const toasts = state.toasts.filter(t => t.id !== id);
-      return { toasts };
-    }, callback);
-  };
+      const toasts = state.toasts.filter(t => t.id !== id)
+      return { toasts }
+    }, callback)
+  }
   removeAll = () => {
     if (!this.state.toasts.length) {
-      return;
+      return
     }
 
     this.state.toasts.forEach(t => this.remove(t.id))
-  };
+  }
   update = (id: Id, options?: Options = {}, cb: Callback = NOOP) => {
-    const callback = () => cb(id);
+    const callback = () => cb(id)
 
     // bail if NO toasts exists with this ID
     if (!this.has(id)) {
-      return;
+      return
     }
 
     // update the toast stack
     this.setState(state => {
-      const old = state.toasts;
-      const i = old.findIndex(t => t.id === id);
-      const updatedToast = { ...old[i], ...options };
-      const toasts = [ ...old.slice(0, i), updatedToast, ...old.slice(i + 1)];
+      const old = state.toasts
+      const i = old.findIndex(t => t.id === id)
+      const updatedToast = { ...old[i], ...options }
+      const toasts = [...old.slice(0, i), updatedToast, ...old.slice(i + 1)]
 
-      return { toasts };
-    }, callback);
-  };
+      return { toasts }
+    }, callback)
+  }
 
-  render() {
+  render () {
     const {
       autoDismiss: inheritedAutoDismiss,
       autoDismissTimeout,
@@ -166,13 +171,13 @@ export class ToastProvider extends Component<Props, State> {
       components,
       placement,
       transitionDuration,
-    } = this.props;
-    const { Toast, ToastContainer } = { ...defaultComponents, ...components };
-    const { add, remove, removeAll, update } = this;
-    const toasts = Object.freeze(this.state.toasts);
+    } = this.props
+    const { Toast, ToastContainer } = { ...defaultComponents, ...components }
+    const { add, remove, removeAll, update } = this
+    const toasts = Object.freeze(this.state.toasts)
 
-    const hasToasts = Boolean(toasts.length);
-    const portalTarget = canUseDOM ? document.body : null; // appease flow
+    const hasToasts = Boolean(toasts.length)
+    const portalTarget = canUseDOM ? document.body : null // appease flow
 
     return (
       <Provider value={{ add, remove, removeAll, update, toasts }}>
@@ -194,6 +199,7 @@ export class ToastProvider extends Component<Props, State> {
                     <Transition
                       appear
                       key={id}
+                      nodeRef={this.nodeRef}
                       mountOnEnter
                       timeout={transitionDuration}
                       unmountOnExit
@@ -201,7 +207,12 @@ export class ToastProvider extends Component<Props, State> {
                       {transitionState => (
                         <ToastController
                           appearance={appearance}
-                          autoDismiss={autoDismiss !== undefined ? autoDismiss : inheritedAutoDismiss}
+                          forwardedRef={this.nodeRef}
+                          autoDismiss={
+                            autoDismiss !== undefined
+                              ? autoDismiss
+                              : inheritedAutoDismiss
+                          }
                           autoDismissTimeout={autoDismissTimeout}
                           component={Toast}
                           key={id}
@@ -225,13 +236,13 @@ export class ToastProvider extends Component<Props, State> {
           <ToastContainer placement={placement} hasToasts={hasToasts} /> // keep ReactDOM.hydrate happy
         )}
       </Provider>
-    );
+    )
   }
 }
 
 export const ToastConsumer = ({ children }: { children: Context => Node }) => (
   <Consumer>{context => children(context)}</Consumer>
-);
+)
 
 export const withToastManager = (Comp: ComponentType<*>) =>
   // $FlowFixMe `forwardRef`
@@ -239,13 +250,15 @@ export const withToastManager = (Comp: ComponentType<*>) =>
     <ToastConsumer>
       {context => <Comp toastManager={context} {...props} ref={ref} />}
     </ToastConsumer>
-  ));
+  ))
 
 export const useToasts = () => {
-  const ctx = useContext(ToastContext);
+  const ctx = useContext(ToastContext)
 
   if (!ctx) {
-    throw Error('The `useToasts` hook must be called from a descendent of the `ToastProvider`.');
+    throw Error(
+      'The `useToasts` hook must be called from a descendent of the `ToastProvider`.'
+    )
   }
 
   return {
@@ -254,5 +267,5 @@ export const useToasts = () => {
     removeAllToasts: ctx.removeAll,
     updateToast: ctx.update,
     toastStack: ctx.toasts,
-  };
-};
+  }
+}

@@ -60,11 +60,10 @@ var A11yText = function A11yText(_ref) {
 };
 A11yText.defaultProps = {
   tag: 'span'
-};
 
-// default appearances
+  // default appearances
 
-var appearances = {
+};var appearances = {
   success: {
     icon: _icons.CheckIcon,
     text: colors.G500,
@@ -215,14 +214,15 @@ var ToastElement = function ToastElement(_ref4) {
       placement = _ref4.placement,
       transitionDuration = _ref4.transitionDuration,
       transitionState = _ref4.transitionState,
-      props = _objectWithoutProperties(_ref4, ['appearance', 'placement', 'transitionDuration', 'transitionState']);
+      forwardedRef = _ref4.forwardedRef,
+      props = _objectWithoutProperties(_ref4, ['appearance', 'placement', 'transitionDuration', 'transitionState', 'forwardedRef']);
 
   var _useState = (0, _react.useState)('auto'),
       _useState2 = _slicedToArray(_useState, 2),
       height = _useState2[0],
       setHeight = _useState2[1];
 
-  var elementRef = (0, _react.useRef)(null);
+  var elementRef = forwardedRef || (0, _react.useRef)(null);
 
   (0, _react.useEffect)(function () {
     if (transitionState === 'entered') {
@@ -263,7 +263,7 @@ var ToastElement = function ToastElement(_ref4) {
 // DefaultToast
 // ==============================
 
-var DefaultToast = function DefaultToast(_ref5) {
+var DefaultToast = _react2.default.forwardRef(function (_ref5, ref) {
   var appearance = _ref5.appearance,
       autoDismiss = _ref5.autoDismiss,
       autoDismissTimeout = _ref5.autoDismissTimeout,
@@ -285,7 +285,8 @@ var DefaultToast = function DefaultToast(_ref5) {
       transitionState: transitionState,
       transitionDuration: transitionDuration,
       onMouseEnter: onMouseEnter,
-      onMouseLeave: onMouseLeave
+      onMouseLeave: onMouseLeave,
+      forwardedRef: ref
     }, otherProps),
     (0, _core.jsx)(Icon, {
       appearance: appearance,
@@ -309,7 +310,7 @@ var DefaultToast = function DefaultToast(_ref5) {
       )
     ) : null
   );
-};
+});
 
 exports.DefaultToast = DefaultToast;
 DefaultToast.defaultProps = {

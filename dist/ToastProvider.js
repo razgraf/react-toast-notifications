@@ -53,18 +53,14 @@ var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.do
 var ToastProvider = exports.ToastProvider = function (_Component) {
   _inherits(ToastProvider, _Component);
 
-  function ToastProvider() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function ToastProvider(props) {
     _classCallCheck(this, ToastProvider);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (ToastProvider.__proto__ || Object.getPrototypeOf(ToastProvider)).call(this, props));
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ToastProvider.__proto__ || Object.getPrototypeOf(ToastProvider)).call.apply(_ref, [this].concat(args))), _this), _this.state = { toasts: [] }, _this.has = function (id) {
+    _this.state = { toasts: [] };
+
+    _this.has = function (id) {
       if (!_this.state.toasts.length) {
         return false;
       }
@@ -72,13 +68,17 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
       return Boolean(_this.state.toasts.filter(function (t) {
         return t.id === id;
       }).length);
-    }, _this.onDismiss = function (id) {
+    };
+
+    _this.onDismiss = function (id) {
       var cb = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.NOOP;
       return function () {
         cb(id);
         _this.remove(id);
       };
-    }, _this.add = function (content) {
+    };
+
+    _this.add = function (content) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _utils.NOOP;
 
@@ -102,7 +102,9 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
 
       // consumer may want to do something with the generated ID (and not use the callback)
       return id;
-    }, _this.remove = function (id) {
+    };
+
+    _this.remove = function (id) {
       var cb = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _utils.NOOP;
 
       var callback = function callback() {
@@ -120,7 +122,9 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
         });
         return { toasts: toasts };
       }, callback);
-    }, _this.removeAll = function () {
+    };
+
+    _this.removeAll = function () {
       if (!_this.state.toasts.length) {
         return;
       }
@@ -128,7 +132,9 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
       _this.state.toasts.forEach(function (t) {
         return _this.remove(t.id);
       });
-    }, _this.update = function (id) {
+    };
+
+    _this.update = function (id) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _utils.NOOP;
 
@@ -152,7 +158,10 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
 
         return { toasts: toasts };
       }, callback);
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    };
+
+    _this.nodeRef = _react2.default.createRef();
+    return _this;
   }
 
   // Internal Helpers
@@ -198,19 +207,20 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
           _react2.default.createElement(
             _reactTransitionGroup.TransitionGroup,
             { component: null },
-            toasts.map(function (_ref2) {
-              var appearance = _ref2.appearance,
-                  autoDismiss = _ref2.autoDismiss,
-                  content = _ref2.content,
-                  id = _ref2.id,
-                  onDismiss = _ref2.onDismiss,
-                  unknownConsumerProps = _objectWithoutProperties(_ref2, ['appearance', 'autoDismiss', 'content', 'id', 'onDismiss']);
+            toasts.map(function (_ref) {
+              var appearance = _ref.appearance,
+                  autoDismiss = _ref.autoDismiss,
+                  content = _ref.content,
+                  id = _ref.id,
+                  onDismiss = _ref.onDismiss,
+                  unknownConsumerProps = _objectWithoutProperties(_ref, ['appearance', 'autoDismiss', 'content', 'id', 'onDismiss']);
 
               return _react2.default.createElement(
                 _reactTransitionGroup.Transition,
                 {
                   appear: true,
                   key: id,
+                  nodeRef: _this2.nodeRef,
                   mountOnEnter: true,
                   timeout: transitionDuration,
                   unmountOnExit: true
@@ -220,6 +230,7 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
                     _ToastController.ToastController,
                     _extends({
                       appearance: appearance,
+                      forwardedRef: _this2.nodeRef,
                       autoDismiss: autoDismiss !== undefined ? autoDismiss : inheritedAutoDismiss,
                       autoDismissTimeout: autoDismissTimeout,
                       component: Toast,
@@ -251,8 +262,8 @@ ToastProvider.defaultProps = {
   placement: 'top-right',
   transitionDuration: 220
 };
-var ToastConsumer = exports.ToastConsumer = function ToastConsumer(_ref3) {
-  var children = _ref3.children;
+var ToastConsumer = exports.ToastConsumer = function ToastConsumer(_ref2) {
+  var children = _ref2.children;
   return _react2.default.createElement(
     Consumer,
     null,

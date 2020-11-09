@@ -123,8 +123,9 @@ var ToastController = exports.ToastController = function (_Component) {
       var _props = this.props,
           autoDismiss = _props.autoDismiss,
           autoDismissTimeout = _props.autoDismissTimeout,
+          forwardedRef = _props.forwardedRef,
           Toast = _props.component,
-          props = _objectWithoutProperties(_props, ['autoDismiss', 'autoDismissTimeout', 'component']);
+          props = _objectWithoutProperties(_props, ['autoDismiss', 'autoDismissTimeout', 'forwardedRef', 'component']);
 
       var isRunning = this.state.isRunning;
 
@@ -138,7 +139,8 @@ var ToastController = exports.ToastController = function (_Component) {
         autoDismissTimeout: autoDismissTimeout,
         isRunning: isRunning,
         onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave
+        onMouseLeave: handleMouseLeave,
+        ref: forwardedRef
       }, props));
     }
   }]);
