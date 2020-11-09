@@ -9,19 +9,19 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from 'react'
-import { jsx, keyframes } from '@emotion/core'
+} from 'react';
+import { jsx, keyframes } from '@emotion/core';
 
-import { CheckIcon, FlameIcon, InfoIcon, CloseIcon, AlertIcon } from './icons'
-import * as colors from './colors'
-import type { HoverFn, Placement } from './types'
-import { NOOP } from './utils'
+import { CheckIcon, FlameIcon, InfoIcon, CloseIcon, AlertIcon } from './icons';
+import * as colors from './colors';
+import type { HoverFn, Placement } from './types';
+import { NOOP } from './utils';
 
 // common
-export const borderRadius = 4
-export const gutter = 8
-export const toastWidth = 360
-export const shrinkKeyframes = keyframes`from { height: 100%; } to { height: 0% }`
+export const borderRadius = 4;
+export const gutter = 8;
+export const toastWidth = 360;
+export const shrinkKeyframes = keyframes`from { height: 100%; } to { height: 0% }`;
 
 // a11y helper
 const A11yText = ({ tag: Tag, ...props }) => (
@@ -38,10 +38,10 @@ const A11yText = ({ tag: Tag, ...props }) => (
     }}
     {...props}
   />
-)
+);
 A11yText.defaultProps = {
   tag: 'span',
-}
+};
 
 // default appearances
 
@@ -70,13 +70,13 @@ const appearances = {
     fg: colors.B200,
     bg: 'white',
   },
-}
-export type AppearanceTypes = $Keys<typeof appearances>
+};
+export type AppearanceTypes = $Keys<typeof appearances>;
 
 const Button = props => (
   <div
-    role='button'
-    className='react-toast-notifications__toast__dismiss-button'
+    role="button"
+    className="react-toast-notifications__toast__dismiss-button"
     css={{
       cursor: 'pointer',
       flexShrink: 0,
@@ -88,11 +88,11 @@ const Button = props => (
     }}
     {...props}
   />
-)
+);
 
 const Content = props => (
   <div
-    className='react-toast-notifications__toast__content'
+    className="react-toast-notifications__toast__content"
     css={{
       flexGrow: 1,
       fontSize: 14,
@@ -102,14 +102,14 @@ const Content = props => (
     }}
     {...props}
   />
-)
+);
 
 // NOTE: invoke animation when NOT `autoDismiss` with opacity of 0 to avoid a
 // paint bug in FireFox.
 // https://bugzilla.mozilla.org/show_bug.cgi?id=625289
 const Countdown = ({ autoDismissTimeout, opacity, isRunning, ...props }) => (
   <div
-    className='react-toast-notifications__toast__countdown'
+    className="react-toast-notifications__toast__countdown"
     css={{
       animation: `${shrinkKeyframes} ${autoDismissTimeout}ms linear`,
       animationPlayState: isRunning ? 'running' : 'paused',
@@ -123,15 +123,15 @@ const Countdown = ({ autoDismissTimeout, opacity, isRunning, ...props }) => (
     }}
     {...props}
   />
-)
+);
 
 const Icon = ({ appearance, autoDismiss, autoDismissTimeout, isRunning }) => {
-  const meta = appearances[appearance]
-  const Glyph = meta.icon
+  const meta = appearances[appearance];
+  const Glyph = meta.icon;
 
   return (
     <div
-      className='react-toast-notifications__toast__icon-wrapper'
+      className="react-toast-notifications__toast__icon-wrapper"
       css={{
         backgroundColor: meta.fg,
         borderTopLeftRadius: borderRadius,
@@ -152,35 +152,35 @@ const Icon = ({ appearance, autoDismiss, autoDismissTimeout, isRunning }) => {
         isRunning={isRunning}
       />
       <Glyph
-        className='react-toast-notifications__toast__icon'
+        className="react-toast-notifications__toast__icon"
         css={{ position: 'relative', zIndex: 1 }}
       />
     </div>
-  )
-}
+  );
+};
 
 // Transitions
 // ------------------------------
 
-function getTranslate (placement) {
-  const pos = placement.split('-')
-  const relevantPlacement = pos[1] === 'center' ? pos[0] : pos[1]
+function getTranslate(placement) {
+  const pos = placement.split('-');
+  const relevantPlacement = pos[1] === 'center' ? pos[0] : pos[1];
   const translateMap = {
     right: 'translate3d(120%, 0, 0)',
     left: 'translate3d(-120%, 0, 0)',
     bottom: 'translate3d(0, 120%, 0)',
     top: 'translate3d(0, -120%, 0)',
-  }
+  };
 
-  return translateMap[relevantPlacement]
+  return translateMap[relevantPlacement];
 }
-export type TransitionState = 'entering' | 'entered' | 'exiting' | 'exited'
+export type TransitionState = 'entering' | 'entered' | 'exiting' | 'exited';
 const toastStates = (placement: Placement) => ({
   entering: { transform: getTranslate(placement) },
   entered: { transform: 'translate3d(0,0,0)' },
   exiting: { transform: 'scale(0.66)', opacity: 0 },
   exited: { transform: 'scale(0.66)', opacity: 0 },
-})
+});
 
 const ToastElement = ({
   appearance,
@@ -190,18 +190,21 @@ const ToastElement = ({
   forwardedRef,
   ...props
 }: *) => {
-  const [height, setHeight] = useState('auto')
-  const elementRef: ElementRef<*> = forwardedRef || useRef(null)
+  const [height, setHeight] = useState('auto');
+  const elementRef: ElementRef<*> = forwardedRef || useRef(null);
 
-  useEffect(() => {
-    if (transitionState === 'entered') {
-      const el = elementRef.current
-      setHeight(el.offsetHeight + gutter)
-    }
-    if (transitionState === 'exiting') {
-      setHeight(0)
-    }
-  }, [transitionState])
+  useEffect(
+    () => {
+      if (transitionState === 'entered') {
+        const el = elementRef.current;
+        setHeight(el.offsetHeight + gutter);
+      }
+      if (transitionState === 'exiting') {
+        setHeight(0);
+      }
+    },
+    [transitionState]
+  );
 
   return (
     <div
@@ -227,8 +230,8 @@ const ToastElement = ({
         {...props}
       />
     </div>
-  )
-}
+  );
+};
 
 // ==============================
 // DefaultToast
@@ -247,55 +250,48 @@ export type ToastProps = {
   transitionDuration: number, // inherited from ToastProvider
   transitionState: TransitionState, // inherited from ToastProvider
   forwardedRef: ElementRef<*>,
-}
+};
 
-export const DefaultToast = React.forwardRef(
-  (
-    {
-      appearance,
-      autoDismiss,
-      autoDismissTimeout,
-      children,
-      isRunning,
-      onDismiss,
-      placement,
-      transitionDuration,
-      transitionState,
-      onMouseEnter,
-      onMouseLeave,
-      ...otherProps
-    }: ToastProps,
-    ref
-  ) => (
-    <ToastElement
+export const DefaultToast = React.forwardRef(({
+  appearance,
+  autoDismiss,
+  autoDismissTimeout,
+  children,
+  isRunning,
+  onDismiss,
+  placement,
+  transitionDuration,
+  transitionState,
+  onMouseEnter,
+  onMouseLeave,
+  ...otherProps
+}: ToastProps, ref) => (
+  <ToastElement
+    appearance={appearance}
+    placement={placement}
+    transitionState={transitionState}
+    transitionDuration={transitionDuration}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+    forwardedRef={ref}
+    {...otherProps}
+  >
+    <Icon
       appearance={appearance}
-      placement={placement}
-      transitionState={transitionState}
-      transitionDuration={transitionDuration}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      forwardedRef={ref}
-      {...otherProps}
-    >
-      <Icon
-        appearance={appearance}
-        autoDismiss={autoDismiss}
-        autoDismissTimeout={autoDismissTimeout}
-        isRunning={isRunning}
-      />
-      <Content>{children}</Content>
-      {onDismiss ? (
-        <Button onClick={onDismiss}>
-          <CloseIcon className='react-toast-notifications__toast__dismiss-icon' />
-          <A11yText className='react-toast-notifications__toast__dismiss-text'>
-            Close
-          </A11yText>
-        </Button>
-      ) : null}
-    </ToastElement>
-  )
-)
+      autoDismiss={autoDismiss}
+      autoDismissTimeout={autoDismissTimeout}
+      isRunning={isRunning}
+    />
+    <Content>{children}</Content>
+    {onDismiss ? (
+      <Button onClick={onDismiss}>
+        <CloseIcon className="react-toast-notifications__toast__dismiss-icon" />
+        <A11yText className="react-toast-notifications__toast__dismiss-text">Close</A11yText>
+      </Button>
+    ) : null}
+  </ToastElement>
+));
 
 DefaultToast.defaultProps = {
   onDismiss: NOOP,
-}
+};

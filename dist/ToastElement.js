@@ -60,10 +60,11 @@ var A11yText = function A11yText(_ref) {
 };
 A11yText.defaultProps = {
   tag: 'span'
+};
 
-  // default appearances
+// default appearances
 
-};var appearances = {
+var appearances = {
   success: {
     icon: _icons.CheckIcon,
     text: colors.G500,

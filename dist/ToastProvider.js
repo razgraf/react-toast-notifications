@@ -229,8 +229,8 @@ var ToastProvider = exports.ToastProvider = function (_Component) {
                   return _react2.default.createElement(
                     _ToastController.ToastController,
                     _extends({
-                      appearance: appearance,
                       forwardedRef: _this2.nodeRef,
+                      appearance: appearance,
                       autoDismiss: autoDismiss !== undefined ? autoDismiss : inheritedAutoDismiss,
                       autoDismissTimeout: autoDismissTimeout,
                       component: Toast,
